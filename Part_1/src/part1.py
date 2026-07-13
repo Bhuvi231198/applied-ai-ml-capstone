@@ -5,6 +5,19 @@
 
 import os
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Current folder
+current_dir = os.path.dirname(__file__)
+
+# Output folder
+output_dir = os.path.join(current_dir, "..", "outputs")
+os.makedirs(output_dir, exist_ok=True)
+
+# Better plot appearance
+sns.set_theme(style="whitegrid")
 
 # -----------------------------
 # Load Dataset
@@ -270,3 +283,169 @@ for col in iqr_columns:
 outlier_df = pd.DataFrame(outlier_summary)
 
 print(outlier_df)
+
+# ==========================================
+# Task 7.1 - Line Plot
+# ==========================================
+
+plt.figure(figsize=(10,5))
+
+plt.plot(df.index, df["SalePrice"])
+
+plt.title("Sale Price Across Dataset")
+plt.xlabel("Row Index")
+plt.ylabel("Sale Price")
+
+plt.tight_layout()
+
+plt.savefig(os.path.join(output_dir, "line_plot_saleprice.png"))
+
+plt.show()
+
+# ==========================================
+# Task 7.2 - Bar Chart
+# ==========================================
+
+plt.figure(figsize=(12,6))
+
+bar_data = df.groupby("Neighborhood")["SalePrice"].mean().sort_values(ascending=False)
+
+plt.bar(bar_data.index, bar_data.values)
+
+plt.xticks(rotation=90)
+
+plt.title("Average Sale Price by Neighborhood")
+plt.xlabel("Neighborhood")
+plt.ylabel("Average Sale Price")
+
+plt.tight_layout()
+
+plt.savefig(os.path.join(output_dir, "bar_chart_neighborhood.png"))
+
+plt.show()
+
+# ==========================================
+# Task 7.3 - Histogram
+# ==========================================
+
+plt.figure(figsize=(8,5))
+
+sns.histplot(
+    df[most_skewed_column],
+    bins=20,
+    kde=True
+)
+
+plt.title(f"Histogram of {most_skewed_column}")
+plt.xlabel(most_skewed_column)
+plt.ylabel("Frequency")
+
+plt.tight_layout()
+
+plt.savefig(
+    os.path.join(
+        output_dir,
+        "histogram_most_skewed.png"
+    )
+)
+
+plt.show()
+
+# ==========================================
+# Task 7.4 - Scatter Plot
+# ==========================================
+
+plt.figure(figsize=(8,6))
+
+sns.scatterplot(
+    data=df,
+    x="GrLivArea",
+    y="SalePrice"
+)
+
+plt.title("Ground Living Area vs Sale Price")
+
+plt.tight_layout()
+
+plt.savefig(
+    os.path.join(
+        output_dir,
+        "scatter_saleprice.png"
+    )
+)
+
+plt.show()
+
+# ==========================================
+# Task 7.5 - Box Plot
+# ==========================================
+
+plt.figure(figsize=(12,6))
+
+sns.boxplot(
+    data=df,
+    x="OverallQual",
+    y="SalePrice"
+)
+
+plt.title("Sale Price by Overall Quality")
+
+plt.tight_layout()
+
+plt.savefig(
+    os.path.join(
+        output_dir,
+        "boxplot_saleprice.png"
+    )
+)
+
+plt.show()
+
+# ==========================================
+# Task 8 - Correlation Heatmap
+# ==========================================
+
+numeric_df = df.select_dtypes(include=["number"])
+
+correlation_matrix = numeric_df.corr()
+
+plt.figure(figsize=(18,14))
+
+sns.heatmap(
+    correlation_matrix,
+    cmap="coolwarm",
+    annot=False
+)
+
+plt.title("Correlation Heatmap")
+
+plt.tight_layout()
+
+plt.savefig(
+    os.path.join(
+        output_dir,
+        "correlation_heatmap.png"
+    )
+)
+
+plt.show()
+
+# -----------------------------------------
+# Highest Correlated Pair
+# -----------------------------------------
+
+corr = correlation_matrix.abs()
+
+upper_triangle = corr.where(
+    ~np.tril(np.ones(corr.shape), k=0).astype(bool)
+)
+
+highest_pair = upper_triangle.stack().idxmax()
+
+highest_value = upper_triangle.stack().max()
+
+print("\nHighest Correlated Pair")
+
+print(highest_pair)
+
+print(f"Correlation : {highest_value:.3f}")
