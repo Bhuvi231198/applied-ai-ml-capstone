@@ -1,0 +1,6 @@
+Model,Test Accuracy,Test ROC-AUC
+Logistic Regression,0.8767,0.9618
+Decision Tree,0.9041,0.9464
+Random Forest,0.9281,0.9796
+Gradient Boosting,0.9349,0.9816
+Best GridSearch Pipeline,0.9315,0.9806
