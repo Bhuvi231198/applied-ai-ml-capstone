@@ -116,3 +116,64 @@ print("Remaining Missing Values After Median Imputation")
 print("=" * 60)
 
 print(df.isnull().sum())
+
+# ==========================================
+# Task 3 - Duplicate Detection & Removal
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Duplicate Detection")
+print("=" * 60)
+
+duplicate_count = df.duplicated().sum()
+
+print(f"Number of duplicate rows before removal: {duplicate_count}")
+
+# Store null percentages before removing duplicates
+null_percentage_before = (df.isnull().sum() / len(df)) * 100
+
+# Remove duplicates
+df = df.drop_duplicates()
+
+print(f"Dataset shape after removing duplicates: {df.shape}")
+
+duplicate_count_after = df.duplicated().sum()
+
+print(f"Number of duplicate rows after removal: {duplicate_count_after}")
+
+# Compare null percentages
+null_percentage_after = (df.isnull().sum() / len(df)) * 100
+
+null_change = pd.DataFrame({
+    "Before (%)": null_percentage_before,
+    "After (%)": null_percentage_after
+})
+
+print("\nNull Percentage Comparison")
+print(null_change)
+
+# ==========================================
+# Task 4 - Data Type Correction
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Data Type Correction")
+print("=" * 60)
+
+memory_before = df.memory_usage(deep=True).sum()
+
+print(f"Memory Usage Before: {memory_before:,} bytes")
+
+# Convert MSSubClass to category
+df["MSSubClass"] = df["MSSubClass"].astype("category")
+
+# Convert Neighborhood to category
+df["Neighborhood"] = df["Neighborhood"].astype("category")
+
+memory_after = df.memory_usage(deep=True).sum()
+
+print(f"Memory Usage After : {memory_after:,} bytes")
+
+print("\nUpdated Data Types")
+
+print(df[["MSSubClass", "Neighborhood"]].dtypes)
