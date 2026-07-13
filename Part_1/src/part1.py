@@ -177,3 +177,55 @@ print(f"Memory Usage After : {memory_after:,} bytes")
 print("\nUpdated Data Types")
 
 print(df[["MSSubClass", "Neighborhood"]].dtypes)
+
+# ==========================================
+# Task 5 - Descriptive Statistics & Skewness
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Descriptive Statistics")
+print("=" * 60)
+
+# Numeric columns only
+numeric_df = df.select_dtypes(include=["number"])
+
+print(numeric_df.describe())
+
+# -----------------------------------------
+# Calculate Skewness
+# -----------------------------------------
+
+print("\n" + "=" * 60)
+print("Skewness of Numeric Columns")
+print("=" * 60)
+
+skewness = numeric_df.skew()
+
+# Create DataFrame
+skewness_df = pd.DataFrame({
+    "Column": skewness.index,
+    "Skewness": skewness.values,
+    "Absolute Skewness": skewness.abs().values
+})
+
+# Sort by absolute skewness
+skewness_df = skewness_df.sort_values(
+    by="Absolute Skewness",
+    ascending=False
+)
+
+print(skewness_df)
+
+# Most skewed column
+most_skewed_column = skewness_df.iloc[0]["Column"]
+most_skewed_value = skewness_df.iloc[0]["Skewness"]
+
+print("\n" + "=" * 60)
+print("Most Skewed Column")
+print("=" * 60)
+
+print(f"Column : {most_skewed_column}")
+print(f"Skewness : {most_skewed_value:.3f}")
+
+# Save for later tasks
+top_two_skewed = skewness_df.head(2)["Column"].tolist()
