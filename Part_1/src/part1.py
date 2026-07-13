@@ -229,3 +229,44 @@ print(f"Skewness : {most_skewed_value:.3f}")
 
 # Save for later tasks
 top_two_skewed = skewness_df.head(2)["Column"].tolist()
+
+# ==========================================
+# Task 6 - Outlier Detection using IQR
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Outlier Detection using IQR")
+print("=" * 60)
+
+# Choose two important numeric columns
+iqr_columns = ["SalePrice", "LotArea"]
+
+outlier_summary = []
+
+for col in iqr_columns:
+
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
+    IQR = Q3 - Q1
+
+    lower_bound = Q1 - (1.5 * IQR)
+    upper_bound = Q3 + (1.5 * IQR)
+
+    outlier_count = df[
+        (df[col] < lower_bound) |
+        (df[col] > upper_bound)
+    ].shape[0]
+
+    outlier_summary.append({
+        "Column": col,
+        "Q1": round(Q1, 2),
+        "Q3": round(Q3, 2),
+        "IQR": round(IQR, 2),
+        "Lower Bound": round(lower_bound, 2),
+        "Upper Bound": round(upper_bound, 2),
+        "Outlier Count": outlier_count
+    })
+
+outlier_df = pd.DataFrame(outlier_summary)
+
+print(outlier_df)
