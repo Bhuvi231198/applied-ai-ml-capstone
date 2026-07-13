@@ -449,3 +449,141 @@ print("\nHighest Correlated Pair")
 print(highest_pair)
 
 print(f"Correlation : {highest_value:.3f}")
+
+# ==========================================
+# Task 9 - Mean vs Median Comparison
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Mean vs Median Comparison")
+print("=" * 60)
+
+comparison = []
+
+for col in top_two_skewed:
+
+    mean_value = df[col].mean()
+    median_value = df[col].median()
+
+    comparison.append({
+        "Column": col,
+        "Mean": round(mean_value, 2),
+        "Median": round(median_value, 2)
+    })
+
+comparison_df = pd.DataFrame(comparison)
+
+print(comparison_df)
+
+# -----------------------------------------
+# Fill remaining null values using median
+# -----------------------------------------
+
+for col in top_two_skewed:
+    if df[col].isnull().sum() > 0:
+        df[col] = df[col].fillna(df[col].median())
+
+print("\nRemaining Null Values")
+
+print(df[top_two_skewed].isnull().sum())
+
+# ==========================================
+# Task 10 - Spearman Correlation
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Pearson Correlation")
+print("=" * 60)
+
+pearson_corr = numeric_df.corr()
+
+print(pearson_corr)
+
+print("\n" + "=" * 60)
+print("Spearman Correlation")
+print("=" * 60)
+
+spearman_corr = numeric_df.corr(method="spearman")
+
+print(spearman_corr)
+
+# -----------------------------------------
+# Difference Table
+# -----------------------------------------
+
+difference = (spearman_corr - pearson_corr).abs()
+
+pairs = []
+
+columns = difference.columns
+
+for i in range(len(columns)):
+    for j in range(i + 1, len(columns)):
+
+        pairs.append({
+            "Column 1": columns[i],
+            "Column 2": columns[j],
+            "Pearson": pearson_corr.iloc[i, j],
+            "Spearman": spearman_corr.iloc[i, j],
+            "Difference": difference.iloc[i, j]
+        })
+
+difference_df = pd.DataFrame(pairs)
+
+difference_df = difference_df.sort_values(
+    by="Difference",
+    ascending=False
+)
+
+print("\nTop 3 Largest Differences")
+
+print(difference_df.head(3))
+
+# ==========================================
+# Task 11 - Group Aggregation
+# ==========================================
+
+print("\n" + "=" * 60)
+print("Grouped Aggregation")
+print("=" * 60)
+
+group_summary = df.groupby("Neighborhood")["SalePrice"].agg(
+    ["mean", "std", "count"]
+)
+
+print(group_summary)
+
+highest_mean = group_summary["mean"].idxmax()
+
+highest_std = group_summary["std"].idxmax()
+
+highest_mean_value = group_summary["mean"].max()
+
+lowest_mean_value = group_summary["mean"].min()
+
+ratio = highest_mean_value / lowest_mean_value
+
+print("\nHighest Mean Group:", highest_mean)
+
+print("Highest Std Group:", highest_std)
+
+print(f"Highest Mean / Lowest Mean Ratio : {ratio:.2f}")
+
+# ==========================================
+# Task 12 - Save Clean Dataset
+# ==========================================
+
+cleaned_path = os.path.join(
+    current_dir,
+    "..",
+    "cleaned_data.csv"
+)
+
+df.to_csv(
+    cleaned_path,
+    index=False
+)
+
+print("\nCleaned dataset saved successfully!")
+
+print(cleaned_path)
